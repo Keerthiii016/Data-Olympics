@@ -45,7 +45,7 @@ if user_menu == 'Overall Analysis':
     nations = df['region'].unique().shape[0]
 
     st.title("Top Statistics")
-    col1,col2,col3 = st.beta_columns(3)
+    col1,col2,col3 = st.columns(3)
     with col1:
         st.header("Editions")
         st.title(editions)
@@ -56,7 +56,7 @@ if user_menu == 'Overall Analysis':
         st.header("Sports")
         st.title(sports)
 
-    col1, col2, col3 = st.beta_columns(3)
+    col1, col2, col3 = st.columns(3)
     with col1:
         st.header("Events")
         st.title(events)
@@ -115,8 +115,11 @@ if user_menu == 'Country-wise Analysis':
     st.title(selected_country + " excels in the following sports")
     pt = helper.country_event_heatmap(df,selected_country)
     fig, ax = plt.subplots(figsize=(20, 20))
-    ax = sns.heatmap(pt,annot=True)
-    st.pyplot(fig)
+    if pt.empty:
+        st.warning("No data available to display heatmap for this country.")
+    else:
+        ax = sns.heatmap(pt, annot=True)
+        st.pyplot(fig)
 
     st.title("Top 10 athletes of " + selected_country)
     top10_df = helper.most_successful_countrywise(df,selected_country)
@@ -164,7 +167,7 @@ if user_menu == 'Athlete wise Analysis':
     selected_sport = st.selectbox('Select a Sport', sport_list)
     temp_df = helper.weight_v_height(df,selected_sport)
     fig,ax = plt.subplots()
-    ax = sns.scatterplot(temp_df['Weight'],temp_df['Height'],hue=temp_df['Medal'],style=temp_df['Sex'],s=60)
+    ax = sns.scatterplot(x=temp_df['Weight'], y=temp_df['Height'], hue=temp_df['Medal'], style=temp_df['Sex'], s=60)
     st.pyplot(fig)
 
     st.title("Men Vs Women Participation Over the Years")

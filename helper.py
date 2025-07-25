@@ -41,11 +41,11 @@ def country_year_list(df):
 
     return years,country
 
-def data_over_time(df,col):
-
-    nations_over_time = df.drop_duplicates(['Year', col])['Year'].value_counts().reset_index().sort_values('index')
-    nations_over_time.rename(columns={'index': 'Edition', 'Year': col}, inplace=True)
-    return nations_over_time
+def data_over_time(df, col):
+    temp = df.drop_duplicates(['Year', col])
+    count = temp.groupby('Year')[col].count().reset_index()
+    count.rename(columns={'Year': 'Edition', col: col}, inplace=True)
+    return count
 
 
 def most_successful(df, sport):
@@ -54,9 +54,8 @@ def most_successful(df, sport):
     if sport != 'Overall':
         temp_df = temp_df[temp_df['Sport'] == sport]
 
-    x = temp_df['Name'].value_counts().reset_index().head(15).merge(df, left_on='index', right_on='Name', how='left')[
-        ['index', 'Name_x', 'Sport', 'region']].drop_duplicates('index')
-    x.rename(columns={'index': 'Name', 'Name_x': 'Medals'}, inplace=True)
+    x = temp_df['Name'].value_counts().reset_index(name='Medals').head(15)
+    x = x.merge(df, left_on='Name', right_on='Name', how='left')[['Name', 'Medals', 'Sport', 'region']].drop_duplicates('Name')
     return x
 
 def yearwise_medal_tally(df,country):
@@ -83,9 +82,8 @@ def most_successful_countrywise(df, country):
 
     temp_df = temp_df[temp_df['region'] == country]
 
-    x = temp_df['Name'].value_counts().reset_index().head(10).merge(df, left_on='index', right_on='Name', how='left')[
-        ['index', 'Name_x', 'Sport']].drop_duplicates('index')
-    x.rename(columns={'index': 'Name', 'Name_x': 'Medals'}, inplace=True)
+    x = temp_df['Name'].value_counts().reset_index(name='Medals').head(10)
+    x = x.merge(df, left_on='Name', right_on='Name', how='left')[['Name', 'Medals', 'Sport']].drop_duplicates('Name')
     return x
 
 def weight_v_height(df,sport):
